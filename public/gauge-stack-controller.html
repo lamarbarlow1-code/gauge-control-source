@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Gauge Stack Controller</title>
+  <link rel="stylesheet" href="/gauge-stack-controller.css" />
+</head>
+<body>
+  <main class="gauge-wrap">
+    <section class="hero">
+      <p class="eyebrow">GS&D / WCCL Master Control</p>
+      <h1>Gauge Stack Controller</h1>
+      <p class="plain">
+        One place for Apps, Files, GPTs, Projects, Payments, Intake, Contracts,
+        Proof, Corrections, and Owner Review.
+      </p>
+      <div class="button-row">
+        <button id="syncButton">Sync Gauge Stack</button>
+        <button id="reloadButton">Reload Registry</button>
+      </div>
+      <p id="syncStatus" class="status-line">Ready.</p>
+    </section>
+
+    <section class="cards">
+      <button data-filter="Apps">Apps</button>
+      <button data-filter="Files">Files</button>
+      <button data-filter="GPTs">GPTs</button>
+      <button data-filter="Projects">Projects</button>
+      <button data-filter="Payments">Payments</button>
+      <button data-filter="Intake">Intake</button>
+      <button data-filter="Contracts">Contracts</button>
+      <button data-filter="Proof">Proof</button>
+      <button data-filter="Corrections">Corrections</button>
+      <button data-filter="Owner Review">Owner Review</button>
+      <button data-filter="All">Show All</button>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <h2>Master Asset Registry</h2>
+        <p>Every item gets one status and one next action.</p>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Asset</th>
+              <th>Type</th>
+              <th>Status</th>
+              <th>Link</th>
+              <th>Notes</th>
+              <th>Last Checked</th>
+            </tr>
+          </thead>
+          <tbody id="assetRows">
+            <tr><td colspan="6">Loading registry…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <h2>Next Action List</h2>
+        <p>Fix the next true thing.</p>
+      </div>
+      <ol id="nextActions" class="actions"></ol>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <h2>Latest Proof Log</h2>
+        <p>Sync proof writes here.</p>
+      </div>
+      <ol id="proofLog" class="actions"></ol>
+    </section>
+  </main>
+
+  <script src="/gauge-stack-controller.js"></script>
+</body>
+</html>

@@ -1,0 +1,178 @@
+GAUGE STACK CONTROLLER — PER STEP DROP-IN
+
+DO NOT rebuild the whole app.
+DO NOT make a new app.
+DO NOT replace Master Control.
+This patch goes INSIDE the existing GS&D / WCCL Master Control app.
+
+MASTER CONTROL SITE:
+https://gsd-gauge-master-control.netlify.app/
+
+GOAL:
+Add Gauge Stack Controller page + Netlify Function to the existing Master Control app.
+
+FILES YOU NEED:
+1. public/gauge-stack-controller.html
+2. public/gauge-stack-controller.css
+3. public/gauge-stack-controller.js
+4. netlify/functions/gauge-stack-agent.mts
+5. package.json dependency check
+
+------------------------------------------------------------
+STEP 1 — OPEN YOUR MASTER CONTROL PROJECT
+------------------------------------------------------------
+Open the existing Master Control project source.
+
+This is the project behind:
+https://gsd-gauge-master-control.netlify.app/
+
+Do not create a new project unless you are forced to.
+
+------------------------------------------------------------
+STEP 2 — COPY THE PUBLIC FILES
+------------------------------------------------------------
+In the Master Control project, find or create the folder:
+
+public
+
+Copy these 3 files into that folder:
+
+public/gauge-stack-controller.html
+public/gauge-stack-controller.css
+public/gauge-stack-controller.js
+
+After copying, the Master Control project should contain:
+
+public/gauge-stack-controller.html
+public/gauge-stack-controller.css
+public/gauge-stack-controller.js
+
+------------------------------------------------------------
+STEP 3 — COPY THE NETLIFY FUNCTION
+------------------------------------------------------------
+In the Master Control project, find or create this folder path:
+
+netlify/functions
+
+Copy this file into that folder:
+
+netlify/functions/gauge-stack-agent.mts
+
+After copying, the Master Control project should contain:
+
+netlify/functions/gauge-stack-agent.mts
+
+------------------------------------------------------------
+STEP 4 — CHECK PACKAGE.JSON
+------------------------------------------------------------
+Open package.json in the Master Control project.
+
+Make sure this dependency exists:
+
+"@netlify/blobs": "latest"
+
+If package.json already has dependencies, add it inside dependencies.
+
+Example:
+
+"dependencies": {
+  "@netlify/blobs": "latest"
+}
+
+Do not delete other dependencies.
+
+------------------------------------------------------------
+STEP 5 — ADD THE LINK INSIDE MASTER CONTROL
+------------------------------------------------------------
+Open the main Master Control page.
+
+This is usually one of these:
+
+index.html
+public/index.html
+src/App.jsx
+src/App.tsx
+src/main.jsx
+
+Add this link/button where you want it to show:
+
+<a href="/gauge-stack-controller.html">Gauge Stack Controller</a>
+
+Plain version:
+Clicking that link opens the new controller page.
+
+------------------------------------------------------------
+STEP 6 — OPTIONAL OWNER KEY
+------------------------------------------------------------
+This patch can use an owner key for safer POST actions.
+
+In Netlify, go to:
+Site settings → Environment variables
+
+Add:
+
+GAUGE_OWNER_KEY
+
+Set it to a private password/key only you know.
+
+If you set this key, the controller may need the same key entered before saving records.
+
+If you skip this step, the function may still run depending on current code/settings, but owner-key protection is safer.
+
+------------------------------------------------------------
+STEP 7 — DEPLOY
+------------------------------------------------------------
+Deploy the Master Control project again.
+
+Use the same site:
+https://gsd-gauge-master-control.netlify.app/
+
+Do not deploy as a separate random Netlify site unless forced.
+
+------------------------------------------------------------
+STEP 8 — TEST THE PAGE
+------------------------------------------------------------
+After deploy, open:
+
+https://gsd-gauge-master-control.netlify.app/gauge-stack-controller.html
+
+Expected result:
+Gauge Stack Controller page loads.
+
+------------------------------------------------------------
+STEP 9 — TEST THE FUNCTION
+------------------------------------------------------------
+The page should call:
+
+/api/gauge-stack-agent
+
+Expected result:
+The controller can load or save records using Netlify Blobs.
+
+Records used:
+registry.json
+proof-log.json
+next-actions.json
+
+------------------------------------------------------------
+IF SOMETHING BREAKS
+------------------------------------------------------------
+If the page is blank:
+Check that the 3 public files are in public/.
+
+If the save/load fails:
+Check that gauge-stack-agent.mts is in netlify/functions/.
+
+If Netlify build fails:
+Check package.json for @netlify/blobs.
+
+If the page opens but records do not save:
+Check Netlify Function logs.
+
+------------------------------------------------------------
+BOUNDARY
+------------------------------------------------------------
+This is not a rebuild.
+This is not a new app.
+This is not Lamar stalling.
+This is a controlled drop-in patch to Master Control.
