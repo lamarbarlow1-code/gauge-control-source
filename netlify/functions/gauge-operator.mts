@@ -27,6 +27,7 @@ type IntakeRecord = Record<string, unknown> & {
   operatorHistory?: Array<Record<string, unknown>>;
 };
 
+const OWNER_KEY_HASH = "f4ca3b60e754f73ba396fa42c9e70a4d0f75146b4a3ef8f3ebbca7d0fcfe6519";
 const ALLOWED_ROUTES = new Set([
   "owner_queue",
   "hold_unknown_source",
@@ -48,10 +49,14 @@ function productionStore(name: string) {
   return getDeployStore(name);
 }
 
-function ownerAuth(req: Request) {
-  const expected = process.env.GAUGE_OWNER_KEY || "";
-  if (!expected) return null;
-  if (req.headers.get("x-gauge-owner-key") !== expected) {
+async function hash(value: string) {
+  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(value));
+  return Array.from(new Uint8Array(digest)).map((byte) => byte.toString(16).padStart(2, "0")).join("");
+}
+
+async function ownerAuth(req: Request) {
+  const sent = req.headers.get("x-gauge-owner-key") || "";
+  if (!sent || await hash(sent) !== OWNER_KEY_HASH) {
     return json({ ok: false, error: "Owner key required." }, 401);
   }
   return null;
@@ -68,7 +73,7 @@ function routeResult(route: string) {
 }
 
 export default async (req: Request, _context: Context) => {
-  const auth = ownerAuth(req);
+  const auth = await ownerAuth(req);
   if (auth) return auth;
 
   const proofStore = productionStore("gauge-proof");
