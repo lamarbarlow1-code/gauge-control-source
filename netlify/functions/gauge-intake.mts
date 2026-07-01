@@ -21,6 +21,19 @@ type Intake = {
 
 type SourceCheck = "known_owner" | "unknown_source" | "duplicate" | "hostile" | "incomplete";
 
+type QueueItem = {
+  proofId: string;
+  hash: string;
+  receivedAt: string;
+  sourceCheck: SourceCheck;
+  intent: string;
+  chosenRoute: string;
+  result: string;
+  contact: string;
+  asset: string;
+  issuePreview: string;
+};
+
 function json(data: unknown, status = 200) {
   return new Response(JSON.stringify(data, null, 2), {
     status,
@@ -148,9 +161,10 @@ export default async (req: Request, _context: Context) => {
     requestedOutcome: clean(input.outcome) || "not_stated",
     urgency: clean(input.urgency) || "not_stated",
   };
+  const createdAt = new Date().toISOString();
   const record = {
     version: "Gauge Proof Chain v1",
-    createdAt: new Date().toISOString(),
+    createdAt,
     rawInput,
     hash,
     sourceCheck,
@@ -161,11 +175,31 @@ export default async (req: Request, _context: Context) => {
     contact,
     proofId,
   };
+  const queueItem: QueueItem = {
+    proofId,
+    hash,
+    receivedAt: createdAt,
+    sourceCheck,
+    intent,
+    chosenRoute,
+    result,
+    contact,
+    asset: clean(input.asset) || clean(input.vehicle) || "Not stated",
+    issuePreview: issue.slice(0, 240),
+  };
 
   try {
+    const queue = (await store.get("queue.json", { type: "json" }) as QueueItem[] | null) || [];
     await store.setJSON(`records/${hash}`, record);
+    await store.setJSON("queue.json", [queueItem, ...queue].slice(0, 500));
   } catch {
-    return json({ ok: false, proofId, hash, error: "Proof storage failed. No route was completed.", fallback: "Hold this request and retry; do not treat it as accepted." }, 503);
+    return json({
+      ok: false,
+      proofId,
+      hash,
+      error: "Proof record or queue index failed. Intake remains held and is not accepted for action.",
+      fallback: "Retry the intake or recover the record by proof ID before routing it."
+    }, 503);
   }
 
   const summary = makeSummary(input, proofId, chosenRoute);
